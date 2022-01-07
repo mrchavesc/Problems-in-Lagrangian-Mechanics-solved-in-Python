@@ -1,0 +1,143 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 86,
+   "id": "fdfc6128",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import sympy as smp\n",
+    "import matplotlib.pyplot as plt\n",
+    "from scipy.integrate import odeint\n",
+    "from matplotlib import animation\n",
+    "from matplotlib.animation import PillowWriter"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 87,
+   "id": "f7c290de",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "t, a, m, M, g = smp.symbols('t a m M g')\n",
+    "theta, phi = smp.symbols(r'\\theta \\phi', cls=smp.Function)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 88,
+   "id": "22131ddf",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "theta = theta(t)\n",
+    "phi = phi(t)\n",
+    "theta_d = smp.diff(theta, t)\n",
+    "theta_dd = smp.diff(theta_d, t)\n",
+    "phi_d = smp.diff(phi, t)\n",
+    "phi_dd = smp.diff(phi_d, t)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 104,
+   "id": "3a1fbbec",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "T1 = smp.Rational(1, 2)*m*(a**2)*(smp.diff(theta, t)**2 + (smp.sin(theta)**2)*smp.diff(phi, t)**2)\n",
+    "T2 = smp.Rational(1, 2)*smp.Rational(1, 2)*M*(a**2)*(smp.diff(phi, t)**2)\n",
+    "V = m*g*a*smp.cos(theta)\n",
+    "T = T1 + T2"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 105,
+   "id": "0aaa0f1b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "L = T - V"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 106,
+   "id": "8d50331c",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/latex": [
+       "$\\displaystyle \\frac{M a^{2} \\left(\\frac{d}{d t} \\phi{\\left(t \\right)}\\right)^{2}}{4} + \\frac{a^{2} m \\left(\\sin^{2}{\\left(\\theta{\\left(t \\right)} \\right)} \\left(\\frac{d}{d t} \\phi{\\left(t \\right)}\\right)^{2} + \\left(\\frac{d}{d t} \\theta{\\left(t \\right)}\\right)^{2}\\right)}{2} - a g m \\cos{\\left(\\theta{\\left(t \\right)} \\right)}$"
+      ],
+      "text/plain": [
+       "M*a**2*Derivative(\\phi(t), t)**2/4 + a**2*m*(sin(\\theta(t))**2*Derivative(\\phi(t), t)**2 + Derivative(\\theta(t), t)**2)/2 - a*g*m*cos(\\theta(t))"
+      ]
+     },
+     "execution_count": 106,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "L"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 102,
+   "id": "6398fd12",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "LE1 = smp.diff(L, theta) - smp.diff(smp.diff(L, theta_d), t).simplify()\n",
+    "LE2 = smp.diff(L, phi) - smp.diff(smp.diff(L, phi_d), t).simplify()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 103,
+   "id": "030b4137",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sols = smp.solve([LE1, LE2], (theta_dd, phi_dd),\n",
+    "                simplify=False, rational=False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ee31442f",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.7"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
